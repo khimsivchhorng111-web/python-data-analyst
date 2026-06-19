@@ -1,0 +1,40 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# កំណត់ស្ទីលក្រាហ្វ
+sns.set_theme(style="whitegrid")
+
+# ១. បង្កើតទិន្នន័យគំរូ (Mock Dataset)
+data = {
+    'Job_Title': ['Data Analyst', 'Python Developer', 'Data Scientist', 'Web Developer', 'Data Engineer', 'AI Engineer', 'Business Analyst', 'Backend Developer'],
+    'Company': ['Company A', 'Company B', 'Company C', 'Company D', 'Company E', 'Company F', 'Company G', 'Company H'],
+    'Required_Skill': ['SQL, PowerBI', 'Python, Django', 'Python, SQL, ML', 'JavaScript, React', 'SQL, Python, Spark', 'Python, PyTorch', 'SQL, Excel', 'Python, Node.js'],
+    'Salary_USD': [800, 900, 1500, 750, 1300, 1800, 700, 950],
+    'Location': ['Phnom Penh', 'Phnom Penh', 'Siem Reap', 'Phnom Penh', 'Phnom Penh', 'Phnom Penh', 'Sihanoukville', 'Phnom Penh']
+}
+df = pd.DataFrame(data)
+
+# បង្កើតការបង្ហាញក្រាហ្វិកពីរទន្ទឹមគ្នា (Subplots)
+fig, axes = plt.subplots(1, 2, figsize=(18, 6))
+
+# ក្រាហ្វទី ១៖ វិភាគប្រាក់ខែតាមតំណែងការងារ
+df_sorted = df.sort_values(by='Salary_USD', ascending=False)
+sns.barplot(ax=axes[0], x='Salary_USD', y='Job_Title', data=df_sorted, palette='Blues_r')
+axes[0].set_title('Average Salary by Tech Job Title in Cambodia', fontsize=12, fontweight='bold')
+axes[0].set_xlabel('Salary (USD)')
+axes[0].set_ylabel('Job Title')
+
+# ក្រាហ្វទី ២៖ វិភាគជំនាញដែលមានតម្រូវការខ្ពស់ជាងគេ
+df['Skill_List'] = df['Required_Skill'].apply(lambda x: [skill.strip() for skill in x.split(',')])
+df_exploded = df.explode('Skill_List')
+skill_counts = df_exploded['Skill_List'].value_counts().reset_index()
+skill_counts.columns = ['Skill', 'Count']
+
+sns.barplot(ax=axes[1], x='Count', y='Skill', data=skill_counts, palette='viridis')
+axes[1].set_title('Top In-Demand Skills for Tech Jobs', fontsize=12, fontweight='bold')
+axes[1].set_xlabel('Number of Job Postings')
+axes[1].set_ylabel('Skills')
+
+plt.tight_layout()
+plt.show()
